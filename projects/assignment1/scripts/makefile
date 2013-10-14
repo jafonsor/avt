@@ -1,0 +1,26 @@
+EXE = assignment1
+
+CC = g++
+INCLUDES = -I../../../../dependencies/glew/include -I../../../../dependencies/freeglut/include
+LIBDEPS  = -L../../../../dependencies/glew/lib -L../../../../dependencies/freeglut/lib
+LIBS = -lGL -lGLEW -lglut -lX11 -lXxf86vm -lXi
+SRCSDIR = ../src
+SRCS = $(SRCSDIR)/*.cpp
+OBJSDIR = ../objs
+RELEASEDIR = $(OBJSDIR)/Release
+DEBUGDIR = $(OBJSDIR)/Debug
+BINDIR = ../../bin
+
+release:
+	(cd $(RELEASEDIR); $(CC) $(LIBDEPS) $(INCLUDES) -o $(EXE) ../$(SRCS) $(LIBS); mv $(EXE) ../$(BINDIR))
+	
+run:
+	(cd $(BINDIR); ./$(EXE))
+
+clean:
+	(cd $(OBJSDIR); rm -rf Release; rm -rf Debug; mkdir Release; mkdir Debug)
+	(cd $(BINDIR); rm -f $(EXE))
+
+deliver: clean
+	rm -f *~
+	(cd $(SRCSDIR); rm -f *~)
