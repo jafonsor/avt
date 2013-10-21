@@ -16,13 +16,14 @@ LIBSDEBIAN = -lGL -lGLEW -lglut
 LIBSUBUNTU = -lGL -lglew -lglut -lX11 -lXxf86vm -lXi
 
 SRCSDIR = ../src
-SRCS = $(SRCSDIR)/*.cpp
+SRCS = $(shell find $(SRCSDIR) -name "*.cpp")
+OBJS = $(SRCS:%.cc=%.o)
 OBJSDIR = ../objs
 RELEASEDIR = $(OBJSDIR)/Release
 DEBUGDIR = $(OBJSDIR)/Debug
 BINDIR = ../../bin
 
-release-debian:
+release-debian: $(OBJS)
 	(cd $(RELEASEDIR); \
 	$(CC) $(INCLUDES_DEBIAN) $(LIB_FILE_DEBIAN) -o $(EXE) ../$(SRCS) $(LIBSDEBIAN); \
 	mv $(EXE) ../$(BINDIR))
@@ -31,6 +32,9 @@ release-ubuntu:
 	(cd $(RELEASEDIR); \
 	$(CC) $(INCLUDES_UBUNTU) $(LIB_FILE_UBUNTU) -o $(EXE) ../$(SRCS) $(LIBSUBUNTU); \
 	mv $(EXE) ../$(BINDIR))
+
+%.o: %.cc
+    g++ -c $< -o $@
 	
 run:
 	(cd $(BINDIR); ./$(EXE))
