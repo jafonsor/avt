@@ -31,5 +31,4 @@ proj:
 	mkdir $(NEWPROJDIR)/scripts
 	mkdir $(NEWPROJDIR)/src
 	mkdir $(NEWPROJDIR)/objs
-	mkdir $(NEWPROJDIR)/objs/Release
-	mkdir $(NEWPROJDIR)/objs/Debug
+	cp -r templateScripts/* $(NEWPROJDIR)/scripts
