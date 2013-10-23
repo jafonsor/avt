@@ -97,15 +97,16 @@ void createShaderProgram()
 		"shaders/FragmentShader.glsl"
 	);
 	FragmentShader->compile();
+	
+	TriShaderProgram = new ShaderProgram(VertexShader, FragmentShader);
 
-	ProgramId = glCreateProgram();
-	glAttachShader(ProgramId, VertexShader->getId());
-	glAttachShader(ProgramId, FragmentShader->getId());
+	ProgramId = TriShaderProgram->getId();
+	TriShaderProgram->linkProgram();
 
-	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
-	glLinkProgram(ProgramId);
-	UniformId = glGetUniformLocation(ProgramId, "Matrix");
+	TriShaderProgram->bindAttribLocation(VERTICES, "in_Position");
+	TriShaderProgram->bindAttribLocation(COLORS, "in_Color");
+	TriShaderProgram->linkProgram();
+	UniformId = TriShaderProgram->getUniformLocation("Matrix");
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }

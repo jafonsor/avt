@@ -6,6 +6,8 @@ ShaderProgram::ShaderProgram(Shader *vertexShader, Shader *fragmentShader):
 	_programId(0), _vertexShader(vertexShader), _fragmentShader(fragmentShader)
 {
 	_programId = glCreateProgram();
+	glAttachShader(_programId, _vertexShader->getId());
+	glAttachShader(_programId, _fragmentShader->getId());
 }
 
 ShaderProgram::~ShaderProgram() {
@@ -35,6 +37,7 @@ void ShaderProgram::linkProgram() {
 	glLinkProgram(_programId);
 
 	// check errors on linking
+	/*
 	glGetProgramiv(_programId, GL_LINK_STATUS, &programSatus);
 	if(programSatus == GL_FALSE) {
 		std::cerr << "Linking shader program " << _programId << ":" << std::endl;
@@ -46,9 +49,9 @@ void ShaderProgram::linkProgram() {
 			std::cerr << "Log is bigger than the log array. Increase the size at ShaderProgram.cpp";
 		}
 
-	}
+	}*/
 }
 
 GLint ShaderProgram::getUniformLocation(const GLchar *name) {
-	glGetUniformLocation(_programId, name);
+	return glGetUniformLocation(_programId, name);
 }
