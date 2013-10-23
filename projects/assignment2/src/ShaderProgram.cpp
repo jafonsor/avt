@@ -37,7 +37,6 @@ void ShaderProgram::linkProgram() {
 	glLinkProgram(_programId);
 
 	// check errors on linking
-	/*
 	glGetProgramiv(_programId, GL_LINK_STATUS, &programSatus);
 	if(programSatus == GL_FALSE) {
 		std::cerr << "Linking shader program " << _programId << ":" << std::endl;
@@ -49,7 +48,7 @@ void ShaderProgram::linkProgram() {
 			std::cerr << "Log is bigger than the log array. Increase the size at ShaderProgram.cpp";
 		}
 
-	}*/
+	}
 }
 
 GLint ShaderProgram::getUniformLocation(const GLchar *name) {
