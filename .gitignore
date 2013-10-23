@@ -1,5 +1,5 @@
 # gedit backup files
 *~
 
-*bin/*
+bin/*
 *.o
