@@ -21,10 +21,14 @@ class Polygon {
 public:
 	Polygon(int vertexChannel, int colorChannel);
 	~Polygon();
+	
+	GLuint getVaoId();
+	GLuint* getVboId();
 
 	void setVertices(const Vertex *vertices, int verticesSize);
 	void setIndices(const GLubyte *indice, int indicesSize);
 	void createBuffers();
+	void draw();
 };
 
 #endif

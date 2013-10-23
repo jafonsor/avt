@@ -51,7 +51,7 @@ unsigned int FrameCount = 0;
 #define VERTICES 0
 #define COLORS 1
 
-GLuint VaoId, VboId[2];
+GLuint VaoId, *VboId;
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UniformId;
 
@@ -137,6 +137,30 @@ void createBufferObjects()
 	triangle->setVertices(Vertices, sizeof(Vertices));
 	triangle->setIndices(Indices, sizeof(Indices));
 	triangle->createBuffers();
+	
+	//glGenVertexArrays(1, &VaoId);
+	VaoId = triangle->getVaoId();
+	//glBindVertexArray(VaoId);
+
+	//glGenBuffers(2, VboId);
+	
+	VboId = triangle->getVboId();
+
+	//glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+	//glEnableVertexAttribArray(VERTICES);
+	//glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	//glEnableVertexAttribArray(COLORS);
+	//glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(Vertices[0].XYZW));
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+
+	//glBindVertexArray(0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glDisableVertexAttribArray(VERTICES);
+	//glDisableVertexAttribArray(COLORS);
 
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
@@ -174,28 +198,17 @@ const Matrix M = {
 
 void drawScene()
 {
-	glBindVertexArray(VaoId);
 	glUseProgram(ProgramId);
-
-	std::cout << 1 << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
+	
+	//glBindVertexArray(VaoId);
+	
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
-
-	std::cout << 2 << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-
-	std::cout << 3 << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
+	triangle->draw(); //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
-
-	std::cout << 4 << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	triangle->draw(); //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
