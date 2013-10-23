@@ -15,13 +15,15 @@ class Polygon {
 	int _colorChannel;
 	const Vertex  *_vertices;
 	const GLubyte *_indices;
+	int _verticesSize;
+	int _indicesSize;
 
 public:
 	Polygon(int vertexChannel, int colorChannel);
 	~Polygon();
 
-	void setVertices(const Vertex *vertices);
-	void setIndices(const GLubyte *indice);
+	void setVertices(const Vertex *vertices, int verticesSize);
+	void setIndices(const GLubyte *indice, int indicesSize);
 	void createBuffers();
 };
 

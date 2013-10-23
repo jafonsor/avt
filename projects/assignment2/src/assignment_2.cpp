@@ -134,8 +134,8 @@ Polygon *triangle;
 void createBufferObjects()
 {
 	triangle = new Polygon(VERTICES,COLORS);
-	triangle->setVertices(Vertices);
-	triangle->setIndices(Indices);
+	triangle->setVertices(Vertices, sizeof(Vertices));
+	triangle->setIndices(Indices, sizeof(Indices));
 	triangle->createBuffers();
 
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
@@ -177,10 +177,21 @@ void drawScene()
 	glBindVertexArray(VaoId);
 	glUseProgram(ProgramId);
 
+	std::cout << 1 << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
+
+	std::cout << 2 << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
+
+	std::cout << 3 << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
+
+	std::cout << 4 << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
