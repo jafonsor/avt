@@ -3,10 +3,9 @@
 #include <iostream>
 
 ShaderProgram::ShaderProgram(Shader *vertexShader, Shader *fragmentShader):
-	_vertexShader(vertexShader), _fragmentShader(fragmentShader)
+	_programId(0), _vertexShader(vertexShader), _fragmentShader(fragmentShader)
 {
 	_programId = glCreateProgram();
-
 }
 
 ShaderProgram::~ShaderProgram() {
