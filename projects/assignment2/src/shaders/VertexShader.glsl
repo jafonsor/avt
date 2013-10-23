@@ -8,6 +8,6 @@ uniform mat4 Matrix;
 
 void main(void)
 {
-	gl_Position = Matrix * in_Position;
+	gl_Position =  Matrix * in_Position;
 	ex_Color = in_Color;
 }

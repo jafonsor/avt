@@ -3,6 +3,8 @@
 
 #include "GL/glew.h"
 
+const float PI = 3.14;
+
 class Matrix {
 	GLfloat *_values;
 public:
@@ -15,9 +17,12 @@ public:
 	
 	static Matrix &createIdentity();
 	static Matrix &createTranslation(GLfloat dx, GLfloat dy, GLfloat dz);
+	static Matrix &createRotationZ(float angle);
 
 	Matrix& operator+(Matrix &otherMatrix);
 	Matrix& operator*(Matrix &otherMatrix);
 };
+
+void print(Matrix &matrix);
 
 #endif

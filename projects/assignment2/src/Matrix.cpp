@@ -1,20 +1,10 @@
 #include "Matrix.h"
 
-#include <cstdlib>
+#include <cmath>
 #include <iostream>
 
-
-void print(Matrix &matrix) {
-	for(int c =0; c < 4; c++) {
-		for(int l=0; l < 4; l++) {
-			std::cout << matrix.get(c,l) << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
 Matrix::Matrix() {
-	_values = (GLfloat*)malloc( sizeof(GLfloat) * 16 );
+	_values = new GLfloat[16];
 	for(int l=0; l < 4; l++) {
 		for(int c = 0; c < 4; c++)
 			this->set(l,c, 0); 
@@ -41,8 +31,21 @@ Matrix &Matrix::createTranslation(float dx, float dy, float dz) {
 	result.set(0,3, dx);
 	result.set(1,3, dy);
 	result.set(2,3, dz);
-	print(result);
 	return result;
+}
+
+Matrix &Matrix::createRotationZ(float angle) {
+	Matrix *result = new Matrix();
+	result->set(0,0, cos(angle) );
+	result->set(1,0, sin(angle) );
+	
+	result->set(0,1, -sin(angle) );
+	result->set(1,1,  cos(angle) );
+	
+	result->set(2,2, 1);
+	result->set(3,3, 1);
+	
+	return *result;
 }
 	
 void Matrix::set(int x, int y, GLfloat value) {
@@ -82,5 +85,14 @@ Matrix& Matrix::operator*(Matrix &otherMatrix) {
 		}
 	}
 	return *result;
+}
+
+void print(Matrix &matrix) {
+	for(int c =0; c < 4; c++) {
+		for(int l=0; l < 4; l++) {
+			std::cout << matrix.get(c,l) << " ";
+		}
+		std::cout << std::endl;
+	}
 }
 

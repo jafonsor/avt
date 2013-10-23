@@ -9,19 +9,19 @@ mv-shaders:
 	mkdir ../$(BINDIR)/shaders
 	cp -r ../$(SRCSDIR)/shaders/* ../$(BINDIR)/shaders
 
-debian: mv-shaders
+debian:
 	cp debian-make/makefile ../
 	(cd ../; \
 	make release EXE=$(EXE) BINDIR=$(BINDIR) OBJSDIR=$(OBJSDIR) SRCSDIR=$(SRCSDIR); \
 	rm makefile)
 
-ubuntu: mv-shaders
+ubuntu:
 	cp ubuntu-make/makefile ../
 	(cd ../; \
 	make release EXE=$(EXE) BINDIR=$(BINDIR) OBJSDIR=$(OBJSDIR) SRCSDIR=$(SRCSDIR); \
 	rm makefile)
 	
-run:
+run: mv-shaders
 	(cd ../$(BINDIR); ./$(EXE))
 
 clean:

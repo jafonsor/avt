@@ -41,6 +41,7 @@
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "Polygon.h"
+#include "Matrix.h"
 
 #define CAPTION "Hello New World"
 
@@ -138,29 +139,11 @@ void createBufferObjects()
 	triangle->setIndices(Indices, sizeof(Indices), 3);
 	triangle->createBuffers();
 	
-	//glGenVertexArrays(1, &VaoId);
+	// these variables should not be used whene the project is finished.
+	// they are still used because the transition to object oriented is
+	// not complete.
 	VaoId = triangle->getVaoId();
-	//glBindVertexArray(VaoId);
-
-	//glGenBuffers(2, VboId);
-	
 	VboId = triangle->getVboId();
-
-	//glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-	//glEnableVertexAttribArray(VERTICES);
-	//glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	//glEnableVertexAttribArray(COLORS);
-	//glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(Vertices[0].XYZW));
-
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
-
-	//glBindVertexArray(0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//glDisableVertexAttribArray(VERTICES);
-	//glDisableVertexAttribArray(COLORS);
 
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
@@ -180,32 +163,40 @@ void destroyBufferObjects()
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
-typedef GLfloat Matrix[16];
-
-const Matrix I = {
+GLfloat Iv[16] = {
 	1.0f,  0.0f,  0.0f,  0.0f,
 	0.0f,  1.0f,  0.0f,  0.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
 
-const Matrix M = {
+GLfloat Mv[16] = {
 	1.0f,  0.0f,  0.0f, -1.0f,
 	0.0f,  1.0f,  0.0f, -1.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
 
+
+Matrix I(Iv);
+Matrix T = Matrix::createTranslation(-1,-1,0);
+Matrix R = Matrix::createRotationZ(PI/2);
+Matrix FinalMatrix = Matrix::createTranslation(1,0,0) * R;
+
 void drawScene()
 {
+	print(T);
+	std::cout << std::endl;
+	print(R);
+	std::cout << std::endl;
+	print(FinalMatrix);
+	std::cout << std::endl;
 	glUseProgram(ProgramId);
 	
-	//glBindVertexArray(VaoId);
-	
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
-	triangle->draw(); //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
-	triangle->draw(); //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, FinalMatrix.getValues());
+	triangle->draw();
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, T.getValues());
+	triangle->draw();
 
 	glUseProgram(0);
 	//glBindVertexArray(0);
