@@ -30,5 +30,7 @@ proj:
 	mkdir $(NEWPROJDIR)
 	mkdir $(NEWPROJDIR)/scripts
 	mkdir $(NEWPROJDIR)/src
+	mkdir $(NEWPROJDIR)/src/shaders
 	mkdir $(NEWPROJDIR)/objs
+	mkdir $(NEWPROJDIR)/bin
 	cp -r templateScripts/* $(NEWPROJDIR)/scripts

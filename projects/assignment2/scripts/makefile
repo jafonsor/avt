@@ -4,20 +4,25 @@ BINDIR = bin
 OBJSDIR = objs
 SRCSDIR = src
 
-debian: 
+mv-shaders:
+	rm -rf ../$(BINDIR)/shaders
+	mkdir ../$(BINDIR)/shaders
+	cp -r ../$(SRCSDIR)/shaders/* ../$(BINDIR)/shaders
+
+debian: mv-shaders
 	cp debian-make/makefile ../
 	(cd ../; \
 	make release EXE=$(EXE) BINDIR=$(BINDIR) OBJSDIR=$(OBJSDIR) SRCSDIR=$(SRCSDIR); \
 	rm makefile)
 
-ubuntu: $(OBJS_WITH_DIR)
+ubuntu: mv-shaders
 	cp ubuntu-make/makefile ../
 	(cd ../; \
 	make release EXE=$(EXE) BINDIR=$(BINDIR) OBJSDIR=$(OBJSDIR) SRCSDIR=$(SRCSDIR); \
 	rm makefile)
 	
 run:
-	./../$(BINDIR)/$(EXE)
+	(cd ../$(BINDIR); ./$(EXE))
 
 clean:
 	(cd ../$(OBJSDIR); rm -rf *;)
