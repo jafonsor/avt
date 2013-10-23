@@ -1,5 +1,6 @@
 # makefile to compile projects on the lab
 CC = g++
+CFLAGS = -ansi -Wall -pedantic
 
 DEPSDIR = ../../dependencies
 DEPS_DIR = $(DEPSDIR)/debian6
@@ -19,7 +20,7 @@ DEBUGDIR = $(OBJSDIR)/Debug
 BINDIR = bin
 
 release: $(OBJS_WITH_DIR)
-	$(CC) $(INCLUDES) $(LIB_FILE) -o $(BINDIR)/$(EXE) $(OBJS_WITH_DIR) $(LIBS);
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIB_FILE) -o $(BINDIR)/$(EXE) $(OBJS_WITH_DIR) $(LIBS);
 
 $(OBJSDIR)/%.o: $(SRCSDIR)/%.cpp
-	g++ -c $< -o $@ $(INCLUDES)
+	g++ $(CFLAGS) -c $< -o $@ $(INCLUDES)

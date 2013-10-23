@@ -1,5 +1,6 @@
 # makefile to compile projects on the lab
 CC = g++
+CFLAGS = -ansi -Wall -pedantic
 
 DEPSDIR = ../../dependencies
 DEPS_DIR = $(DEPSDIR)/ubuntu
@@ -19,8 +20,8 @@ DEBUGDIR = $(OBJSDIR)/Debug
 BINDIR = bin
 
 release: $(OBJS_WITH_DIR)
-	$(CC) -o $(EXE) $(OBJS_WITH_DIR) $(LIBS);
+	$(CC) $(CFLAGS) -o $(EXE) $(OBJS_WITH_DIR) $(LIBS);
 	mv $(EXE) $(BINDIR)
 
 $(OBJSDIR)/%.o: $(SRCSDIR)/%.cpp
-	g++ -c $< -o $@
+	g++ $(CFLAGS) -c $< -o $@
