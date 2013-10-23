@@ -135,7 +135,7 @@ void createBufferObjects()
 {
 	triangle = new Polygon(VERTICES,COLORS);
 	triangle->setVertices(Vertices, sizeof(Vertices));
-	triangle->setIndices(Indices, sizeof(Indices));
+	triangle->setIndices(Indices, sizeof(Indices), 3);
 	triangle->createBuffers();
 	
 	//glGenVertexArrays(1, &VaoId);

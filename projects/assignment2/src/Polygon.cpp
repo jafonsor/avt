@@ -4,7 +4,8 @@
 
 Polygon::Polygon(int vertexChannel, int colorChannel):
 	_vertexChannel(vertexChannel), _colorChannel(colorChannel),
-	_vertices(0), _indices(0), _verticesSize(0), _indicesSize(0)
+	_vertices(0), _indices(0), _verticesSize(0), _indicesSize(0),
+	_numberOfIndices(0)
 {
 	// empty
 }
@@ -26,9 +27,10 @@ void Polygon::setVertices(const Vertex *vertices, int verticesSize) {
 	_verticesSize = verticesSize;
 }
 
-void Polygon::setIndices(const GLubyte *indice, int indicesSize) {
+void Polygon::setIndices(const GLubyte *indice, int indicesSize, int numberOfIndices) {
 	_indices = indice;
 	_indicesSize = indicesSize;
+	_numberOfIndices = numberOfIndices;
 }
 
 void Polygon::createBuffers() {
@@ -63,7 +65,7 @@ void Polygon::createBuffers() {
 	glDisableVertexAttribArray(_colorChannel);
 }
 
-void draw() {
+void Polygon::draw() {
 	glBindVertexArray(_vaoId);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	glBindVertexArray(0);

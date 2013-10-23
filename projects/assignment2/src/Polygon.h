@@ -17,6 +17,7 @@ class Polygon {
 	const GLubyte *_indices;
 	int _verticesSize;
 	int _indicesSize;
+	int _numberOfIndices;
 
 public:
 	Polygon(int vertexChannel, int colorChannel);
@@ -26,7 +27,7 @@ public:
 	GLuint* getVboId();
 
 	void setVertices(const Vertex *vertices, int verticesSize);
-	void setIndices(const GLubyte *indice, int indicesSize);
+	void setIndices(const GLubyte *indice, int indicesSize, int numberOfIndices);
 	void createBuffers();
 	void draw();
 };
