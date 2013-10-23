@@ -192,7 +192,8 @@ void drawScene()
 	std::cout << std::endl;
 	print(FinalMatrix);
 	std::cout << std::endl;
-	glUseProgram(ProgramId);
+	TriShaderProgram->use();
+	
 	
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, FinalMatrix.getValues());
 	triangle->draw();

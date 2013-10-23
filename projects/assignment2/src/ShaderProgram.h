@@ -18,6 +18,7 @@ public:
 	void bindAttribLocation(GLuint channel, const GLchar *attribName);
 	void linkProgram();
 	GLint getUniformLocation(const GLchar *name);
+	void use();
 };
 
 #endif

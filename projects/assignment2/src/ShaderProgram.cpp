@@ -55,3 +55,7 @@ void ShaderProgram::linkProgram() {
 GLint ShaderProgram::getUniformLocation(const GLchar *name) {
 	return glGetUniformLocation(_programId, name);
 }
+
+void ShaderProgram::use() {
+	glUseProgram(_programId);
+}
