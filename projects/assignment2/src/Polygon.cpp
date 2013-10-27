@@ -11,7 +11,15 @@ Polygon::Polygon(int vertexChannel, int colorChannel):
 }
 
 Polygon::~Polygon() {
-	// empty
+	/*
+	glDisableVertexAttribArray(_vertexChannel);
+	glDisableVertexAttribArray(_colorChannel);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glDeleteBuffers(2, _vboId);
+	glDeleteVertexArrays(1, &_vaoId);
+	*/
 }
 
 GLuint Polygon::getVaoId() {
@@ -39,8 +47,6 @@ void Polygon::createBuffers() {
 
 	glGenBuffers(2, _vboId);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, _vboId[0]);
-	
 	std::cout << "sizeof(_vertices): " << _verticesSize << std::endl;
 	std::cout << "sizeof(_indices):  " << _indicesSize  << std::endl;
 	std::cout << "sizeof(Vertex): " << sizeof(Vertex) << std::endl;
@@ -48,6 +54,7 @@ void Polygon::createBuffers() {
 	std::cout << _vertices[2].RGBA[0] << ", " << _vertices[2].RGBA[1] << ", " << _vertices[2].RGBA[2]
 	          << ", " << _vertices[2].RGBA[3] << std::endl;
 	std::cout << _indices[0] << ", " << _indices[1] << ", " << _indices[2] << std::endl;
+	glBindBuffer(GL_ARRAY_BUFFER, _vboId[0]);
 	glBufferData(GL_ARRAY_BUFFER, _verticesSize, _vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(_vertexChannel);
 	glVertexAttribPointer(_vertexChannel, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);

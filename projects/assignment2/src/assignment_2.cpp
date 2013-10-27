@@ -42,6 +42,8 @@
 #include "ShaderProgram.h"
 #include "Polygon.h"
 #include "Matrix.h"
+#include "scenenode/PolygonNode.h"
+#include "scenenode/GroupNode.h"
 
 #define CAPTION "Hello New World"
 
@@ -55,6 +57,7 @@ unsigned int FrameCount = 0;
 GLuint VaoId, *VboId;
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UniformId;
+GroupNode sceneRoot();
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -135,22 +138,20 @@ const GLubyte Indices[] =
 Polygon *triangle;
 void createBufferObjects()
 {
+	GroupNode gn;
 	triangle = new Polygon(VERTICES,COLORS);
 	triangle->setVertices(Vertices, sizeof(Vertices));
 	triangle->setIndices(Indices, sizeof(Indices), 3);
 	triangle->createBuffers();
 	
-	// these variables should not be used whene the project is finished.
-	// they are still used because the transition to object oriented is
-	// not complete.
-	VaoId = triangle->getVaoId();
-	VboId = triangle->getVboId();
-
+	gn.add( new PolygonNode(triangle) );
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
 void destroyBufferObjects()
 {
+	// Donne whene the sceneRoot is destroyed.
+	/*
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -160,6 +161,7 @@ void destroyBufferObjects()
 	glDeleteBuffers(2, VboId);
 	glDeleteVertexArrays(1, &VaoId);
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
+	*/
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
@@ -194,12 +196,19 @@ void drawScene()
 	std::cout << std::endl;
 	TriShaderProgram->use();
 	
-	
+	std::cout << "1" << std::endl;
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, FinalMatrix.getValues());
+	std::cout << "1" << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
 	triangle->draw();
+	std::cout << "1" << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, T.getValues());
+	std::cout << "1" << std::endl;
+	checkOpenGLError("ERROR: Could not draw scene.");
+	std::cout << "1" << std::endl;
 	triangle->draw();
-
+	checkOpenGLError("ERROR: Could not draw scene.");
 	glUseProgram(0);
 	//glBindVertexArray(0);
 
