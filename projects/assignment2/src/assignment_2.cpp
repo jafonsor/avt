@@ -127,14 +127,25 @@ void destroyShaderProgram()
 
 #define L 1.0f // length of a side of the tangram square
 
-const Vertex grateTriagleVerices[] = 
+const Vertex GrateTriagleVerices[] = 
 {
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }},
-	{{ L/2.0f, L/2.0f, 0.0f, 1.0f }},
+	{{  0.0f,   0.0f,   0.0f, 1.0f }},
+	{{  L/2.0f, L/2.0f, 0.0f, 1.0f }},
 	{{ -L/2.0f, L/2.0f, 0.0f, 1.0f }}
 };
 
-const GLubyte Indices[] =
+GLfloat GrateTriagleColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+const Vertex MiddleTriangleVertices[] =
+{
+	{{  0.0f,   0.0f,   0.0f, 1.0f }},
+	{{  0.0f,   L/2.0f, 0.0f, 1.0f }},
+	{{ -L/2.0f, 0.0f,   0.0f, 1.0f }}
+};
+
+GLfloat MiddleTriagleColor[4] = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+const GLubyte TriangleIndices[] =
 {
 	0,1,2
 };
@@ -142,26 +153,34 @@ const GLubyte Indices[] =
 
 void createScene()
 {
-	Polygon *triangle;
-	GLfloat *color = new GLfloat[4]();
-	color[0] = 1; color[1] = 1; color[2] = 1; color[3] = 1;
-	triangle = new Polygon(&manager);
-	triangle->setColor(color);
-	triangle->setVertices(grateTriagleVerices, sizeof(grateTriagleVerices));
-	triangle->setIndices(Indices, sizeof(Indices), 3);
-	triangle->createBuffers();
+	// greate triangle
+	Polygon *grateTriangle;
+	grateTriangle = new Polygon(&manager);
+	grateTriangle->setColor(GrateTriagleColor);
+	grateTriangle->setVertices(GrateTriagleVerices, sizeof(GrateTriagleVerices));
+	grateTriangle->setIndices(TriangleIndices, sizeof(TriangleIndices), 3);
+	grateTriangle->createBuffers();
 
-	PolygonNode *triangleNode  = new PolygonNode(triangle);
-	MatrixNode *identity       = new MatrixNode( &manager, &Matrix::createIdentity() );
-	identity->setNext(triangleNode);
+	PolygonNode *grateTriangleNode  = new PolygonNode(grateTriangle);
+	MatrixNode *grateTrianglePosition = new MatrixNode( &manager, &Matrix::createIdentity() );
+	grateTrianglePosition->setNext(grateTriangleNode);
 
-	PolygonNode *triangleNode2 = new PolygonNode(triangle);
-	MatrixNode *translation    = new MatrixNode( &manager, &Matrix::createTranslation(-1,-1,0) );
-	translation->setNext(triangleNode2);
+	// middle triangle
+	Polygon *middleTriangle;
+	middleTriangle = new Polygon(&manager);
+	middleTriangle->setColor(MiddleTriagleColor);
+	middleTriangle->setVertices(MiddleTriangleVertices, sizeof(MiddleTriangleVertices));
+	middleTriangle->setIndices(TriangleIndices, sizeof(TriangleIndices), 3);
+	middleTriangle->createBuffers();
+
+	PolygonNode *middleTriangleNode = new PolygonNode(middleTriangle);
+	MatrixNode *middleTrianglePosition = new MatrixNode( &manager, &Matrix::createTranslation(L/2.0f, -L/2.0f, 0) );
+	middleTrianglePosition->setNext(middleTriangleNode);
+
 	
 	GroupNode *sceneRoot = manager.getSceneRoot();
-	sceneRoot->add( identity );
-	sceneRoot->add( translation );
+	sceneRoot->add( grateTrianglePosition );
+	sceneRoot->add( middleTrianglePosition );
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
