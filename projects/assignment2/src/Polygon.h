@@ -2,7 +2,7 @@
 #define POLYGON_H
 
 #include "GL/glew.h"
-#include "../SceneManager.h"
+#include "SceneManager.h"
 
 typedef struct {
 	GLfloat XYZW[4];
@@ -10,10 +10,11 @@ typedef struct {
 } Vertex;
 
 class Polygon {
+	SceneManager *_manager;
+	GLfloat *_color;
 	GLuint _vaoId;
 	GLuint _vboId[2];
 	int _vertexChannel;
-	int _colorChannel;
 	const Vertex  *_vertices;
 	const GLubyte *_indices;
 	int _verticesSize;
@@ -21,7 +22,7 @@ class Polygon {
 	int _numberOfIndices;
 
 public:
-	Polygon(SceneManager *manager);
+	Polygon(SceneManager *manager, GLfloat color[4]);
 	~Polygon();
 	
 	GLuint getVaoId();

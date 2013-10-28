@@ -109,11 +109,10 @@ void createShaderProgram()
 	ProgramId = TriShaderProgram->getId();
 	TriShaderProgram->linkProgram();
 
-	TriShaderProgram->setPositionAttribName("in_position");
-	TriShaderProgram->setColorAttribName("in_color");
+	TriShaderProgram->setPositionAttribName("in_Position");
 	TriShaderProgram->linkProgram();
 	manager.setShaderProgram(TriShaderProgram);
-
+    manager.getShaderProgram()->getUniformLocation("Color");
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
 
@@ -138,10 +137,13 @@ const GLubyte Indices[] =
 	0,1,2
 };
 
-Polygon *triangle;
+
 void createScene()
 {
-	triangle = new Polygon(VERTICES,COLORS);
+	Polygon *triangle;
+	GLfloat *color = new GLfloat[4]();
+	color[0] = 1; color[1] = 1; color[2] = 1; color[3] = 1;
+	triangle = new Polygon(&manager, color);
 	triangle->setVertices(Vertices, sizeof(Vertices));
 	triangle->setIndices(Indices, sizeof(Indices), 3);
 	triangle->createBuffers();
