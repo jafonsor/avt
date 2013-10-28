@@ -24,6 +24,25 @@ GLuint ShaderProgram::getId() {
 	return _programId;
 }
 
+GLint ShaderProgram::getModelMatrixUniformId() {
+	return getUniformLocation("Matrix");
+}
+
+GLuint ShaderProgram::getPositionChannel() {
+	return POSITION_CHANNEL;
+}
+
+GLuint ShaderProgram::getColorChannel() {
+	return COLOR_CHANNEL;
+}
+
+void ShaderProgram::setPositionAttribName(const char *attribName) {
+	bindAttribLocation(POSITION_CHANNEL, attribName);
+}
+void ShaderProgram::setColorAttribName(const char *attribName) {
+	bindAttribLocation(COLOR_CHANNEL, attribName);
+}
+
 void ShaderProgram::bindAttribLocation(GLuint channel, const GLchar *attribName) {
 	glBindAttribLocation(_programId, channel, attribName);
 }

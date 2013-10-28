@@ -10,7 +10,10 @@ public:
 	SingleNode(SceneNode *next);
 	~SingleNode();
 
-	inline void transverse();
+	void setNext(SceneNode *next);
+
+	// SceneNode
+	virtual void transverse();
 
 	virtual void apply() = 0;
 	virtual void clear()  = 0;

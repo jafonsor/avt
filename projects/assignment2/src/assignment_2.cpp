@@ -44,6 +44,9 @@
 #include "Matrix.h"
 #include "scenenode/PolygonNode.h"
 #include "scenenode/GroupNode.h"
+#include "scenenode/SingleNode.h"
+#include "scenenode/MatrixNode.h"
+#include "SceneManager.h"
 
 #define CAPTION "Hello New World"
 
@@ -57,7 +60,7 @@ unsigned int FrameCount = 0;
 GLuint VaoId, *VboId;
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UniformId;
-GroupNode sceneRoot();
+SceneManager manager;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -106,10 +109,10 @@ void createShaderProgram()
 	ProgramId = TriShaderProgram->getId();
 	TriShaderProgram->linkProgram();
 
-	TriShaderProgram->bindAttribLocation(VERTICES, "in_Position");
-	TriShaderProgram->bindAttribLocation(COLORS, "in_Color");
+	TriShaderProgram->setPositionAttribName("in_position");
+	TriShaderProgram->setColorAttribName("in_color");
 	TriShaderProgram->linkProgram();
-	UniformId = TriShaderProgram->getUniformLocation("Matrix");
+	manager.setShaderProgram(TriShaderProgram);
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
@@ -136,15 +139,24 @@ const GLubyte Indices[] =
 };
 
 Polygon *triangle;
-void createBufferObjects()
+void createScene()
 {
-	GroupNode gn;
 	triangle = new Polygon(VERTICES,COLORS);
 	triangle->setVertices(Vertices, sizeof(Vertices));
 	triangle->setIndices(Indices, sizeof(Indices), 3);
 	triangle->createBuffers();
+
+	PolygonNode *triangleNode  = new PolygonNode(triangle);
+	MatrixNode *identity       = new MatrixNode( &manager, &Matrix::createIdentity() );
+	identity->setNext(triangleNode);
+
+	PolygonNode *triangleNode2 = new PolygonNode(triangle);
+	MatrixNode *translation    = new MatrixNode( &manager, &Matrix::createTranslation(-1,-1,0) );
+	translation->setNext(triangleNode2);
 	
-	gn.add( new PolygonNode(triangle) );
+	GroupNode *sceneRoot = manager.getSceneRoot();
+	sceneRoot->add( identity );
+	sceneRoot->add( translation );
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
@@ -188,29 +200,7 @@ Matrix FinalMatrix = Matrix::createTranslation(1,0,0) * R;
 
 void drawScene()
 {
-	print(T);
-	std::cout << std::endl;
-	print(R);
-	std::cout << std::endl;
-	print(FinalMatrix);
-	std::cout << std::endl;
-	TriShaderProgram->use();
-	
-	std::cout << "1" << std::endl;
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, FinalMatrix.getValues());
-	std::cout << "1" << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
-	triangle->draw();
-	std::cout << "1" << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, T.getValues());
-	std::cout << "1" << std::endl;
-	checkOpenGLError("ERROR: Could not draw scene.");
-	std::cout << "1" << std::endl;
-	triangle->draw();
-	checkOpenGLError("ERROR: Could not draw scene.");
-	glUseProgram(0);
-	//glBindVertexArray(0);
+	manager.renderScene();
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -313,7 +303,7 @@ void init(int argc, char* argv[])
 	setupGLEW();
 	setupOpenGL();
 	createShaderProgram();
-	createBufferObjects();
+	createScene();
 	setupCallbacks();
 }
 

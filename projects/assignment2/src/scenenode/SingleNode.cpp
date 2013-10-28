@@ -15,6 +15,10 @@ SingleNode::~SingleNode() {
 		delete _next;
 }
 
+void SingleNode::setNext(SceneNode *next) {
+	_next = next;
+}
+
 void SingleNode::transverse() {
 	apply();
 	if(_next != NULL) {
