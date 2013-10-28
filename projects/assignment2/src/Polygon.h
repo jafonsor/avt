@@ -6,7 +6,6 @@
 
 typedef struct {
 	GLfloat XYZW[4];
-	GLfloat RGBA[4];
 } Vertex;
 
 class Polygon {
@@ -22,12 +21,13 @@ class Polygon {
 	int _numberOfIndices;
 
 public:
-	Polygon(SceneManager *manager, GLfloat color[4]);
+	Polygon(SceneManager *manager);
 	~Polygon();
 	
 	GLuint getVaoId();
 	GLuint* getVboId();
 
+	void setColor(GLfloat color[4]);
 	void setVertices(const Vertex *vertices, int verticesSize);
 	void setIndices(const GLubyte *indice, int indicesSize, int numberOfIndices);
 	void createBuffers();

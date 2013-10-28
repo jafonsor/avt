@@ -2,9 +2,8 @@
 
 #include <iostream>
 
-Polygon::Polygon(SceneManager *manager, GLfloat color[4]):
+Polygon::Polygon(SceneManager *manager):
 	_manager(manager),
-	_color(color),
 	_vertexChannel(manager->getShaderProgram()->getPositionChannel()),
 	_vertices(0), _indices(0), _verticesSize(0), _indicesSize(0),
 	_numberOfIndices(0)
@@ -32,6 +31,10 @@ GLuint* Polygon::getVboId() {
 	return _vboId;
 }
 
+void Polygon::setColor(GLfloat color[4]) {
+	_color = color;
+}
+
 void Polygon::setVertices(const Vertex *vertices, int verticesSize) {
 	_vertices = vertices;
 	_verticesSize = verticesSize;
@@ -52,7 +55,7 @@ void Polygon::createBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER, _vboId[0]);
 	glBufferData(GL_ARRAY_BUFFER, _verticesSize, _vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(_vertexChannel);
-	glVertexAttribPointer(_vertexChannel, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(_vertexChannel, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vboId[1]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indicesSize, _indices, GL_STATIC_DRAW);

@@ -125,11 +125,13 @@ void destroyShaderProgram()
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-const Vertex Vertices[] = 
+#define L 1.0f // length of a side of the tangram square
+
+const Vertex grateTriagleVerices[] = 
 {
-	{{ 0.25f, 0.25f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.75f, 0.25f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.50f, 0.75f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}
+	{{ 0.0f, 0.0f, 0.0f, 1.0f }},
+	{{ L/2.0f, L/2.0f, 0.0f, 1.0f }},
+	{{ -L/2.0f, L/2.0f, 0.0f, 1.0f }}
 };
 
 const GLubyte Indices[] =
@@ -143,8 +145,9 @@ void createScene()
 	Polygon *triangle;
 	GLfloat *color = new GLfloat[4]();
 	color[0] = 1; color[1] = 1; color[2] = 1; color[3] = 1;
-	triangle = new Polygon(&manager, color);
-	triangle->setVertices(Vertices, sizeof(Vertices));
+	triangle = new Polygon(&manager);
+	triangle->setColor(color);
+	triangle->setVertices(grateTriagleVerices, sizeof(grateTriagleVerices));
 	triangle->setIndices(Indices, sizeof(Indices), 3);
 	triangle->createBuffers();
 
