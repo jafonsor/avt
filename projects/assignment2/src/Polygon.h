@@ -26,8 +26,7 @@ public:
 	
 	GLuint getVaoId();
 	GLuint* getVboId();
-
-	void setColor(GLfloat color[4]);
+	
 	void setVertices(const Vertex *vertices, int verticesSize);
 	void setIndices(const GLubyte *indice, int indicesSize, int numberOfIndices);
 	void createBuffers();

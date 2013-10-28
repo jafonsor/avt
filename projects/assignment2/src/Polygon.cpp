@@ -31,10 +31,6 @@ GLuint* Polygon::getVboId() {
 	return _vboId;
 }
 
-void Polygon::setColor(GLfloat color[4]) {
-	_color = color;
-}
-
 void Polygon::setVertices(const Vertex *vertices, int verticesSize) {
 	_vertices = vertices;
 	_verticesSize = verticesSize;
@@ -67,8 +63,6 @@ void Polygon::createBuffers() {
 }
 
 void Polygon::draw() {
-	GLint colorUniforId = _manager->getShaderProgram()->getUniformLocation("Color");
-	glUniform4fv(colorUniforId, 1, _color);
 	glBindVertexArray(_vaoId);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	glBindVertexArray(0);

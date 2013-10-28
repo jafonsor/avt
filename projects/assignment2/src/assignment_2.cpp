@@ -46,6 +46,7 @@
 #include "scenenode/GroupNode.h"
 #include "scenenode/SingleNode.h"
 #include "scenenode/MatrixNode.h"
+#include "scenenode/ColorNode.h"
 #include "SceneManager.h"
 
 #define CAPTION "Hello New World"
@@ -134,7 +135,8 @@ const Vertex GrateTriagleVerices[] =
 	{{ -L/2.0f, L/2.0f, 0.0f, 1.0f }}
 };
 
-GLfloat GrateTriagleColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat GrateTriagleColor1[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat GrateTriagleColor2[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 const Vertex MiddleTriangleVertices[] =
 {
@@ -156,26 +158,38 @@ void createScene()
 	// greate triangle
 	Polygon *grateTriangle;
 	grateTriangle = new Polygon(&manager);
-	grateTriangle->setColor(GrateTriagleColor);
 	grateTriangle->setVertices(GrateTriagleVerices, sizeof(GrateTriagleVerices));
 	grateTriangle->setIndices(TriangleIndices, sizeof(TriangleIndices), 3);
 	grateTriangle->createBuffers();
 
 	PolygonNode *grateTriangleNode  = new PolygonNode(grateTriangle);
+
+	// grate triangle 1
+	ColorNode *coloredGrateTriangle = new ColorNode(GrateTriagleColor1, &manager);
+	coloredGrateTriangle->setNext(grateTriangleNode);
 	MatrixNode *grateTrianglePosition = new MatrixNode( &manager, &Matrix::createIdentity() );
-	grateTrianglePosition->setNext(grateTriangleNode);
+	grateTrianglePosition->setNext(coloredGrateTriangle);
+
+	// grate triangle 2
+	ColorNode *coloredGrateTriangle = new ColorNode(GrateTriagleColor2, &manager);
+	coloredGrateTriangle->setNext(grateTriangleNode);
+	MatrixNode *grateTrianglePosition = new MatrixNode( &manager, &Matrix::createRotationZ(PI/2) );
+	grateTrianglePosition->setNext(coloredGrateTriangle);
 
 	// middle triangle
 	Polygon *middleTriangle;
 	middleTriangle = new Polygon(&manager);
-	middleTriangle->setColor(MiddleTriagleColor);
 	middleTriangle->setVertices(MiddleTriangleVertices, sizeof(MiddleTriangleVertices));
 	middleTriangle->setIndices(TriangleIndices, sizeof(TriangleIndices), 3);
 	middleTriangle->createBuffers();
 
 	PolygonNode *middleTriangleNode = new PolygonNode(middleTriangle);
+
+	ColorNode *coloredMiddleTriangle = new ColorNode(MiddleTriagleColor, &manager);
+	coloredMiddleTriangle->setNext(middleTriangleNode);
+
 	MatrixNode *middleTrianglePosition = new MatrixNode( &manager, &Matrix::createTranslation(L/2.0f, -L/2.0f, 0) );
-	middleTrianglePosition->setNext(middleTriangleNode);
+	middleTrianglePosition->setNext(coloredMiddleTriangle);
 
 	
 	GroupNode *sceneRoot = manager.getSceneRoot();
