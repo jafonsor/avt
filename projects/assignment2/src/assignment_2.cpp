@@ -170,7 +170,7 @@ void createScene()
 	// backgroud
 
 	Polygon *background = new Polygon(&manager);
-	background->setVertices(BackgroundVertices, sizeof(BackgroundVertices)))
+	background->setVertices(BackgroundVertices, sizeof(BackgroundVertices));
 	background->setIndices(TriangleIndices, sizeof(TriangleIndices), 4);
 	background->createBuffers();
 
