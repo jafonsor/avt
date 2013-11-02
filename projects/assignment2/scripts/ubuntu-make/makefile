@@ -13,7 +13,6 @@ LIBS = -lGL -lGLEW -lglut -lGLU -lX11 -lXxf86vm -lXi
 
 SRCS = $(shell cd $(SRCSDIR); find . -name "*.cpp")
 
-
 OBJSDIR = objs
 OBJS = $(SRCS:%.cpp=%.o)
 OBJS_WITH_DIR = $(OBJS:./%.o=$(OBJSDIR)/%.o)
