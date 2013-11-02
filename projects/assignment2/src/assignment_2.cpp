@@ -41,6 +41,13 @@
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "Polygon.h"
+#include "Matrix.h"
+#include "scenenode/PolygonNode.h"
+#include "scenenode/GroupNode.h"
+#include "scenenode/SingleNode.h"
+#include "scenenode/MatrixNode.h"
+#include "scenenode/ColorNode.h"
+#include "SceneManager.h"
 
 #define CAPTION "Hello New World"
 
@@ -51,9 +58,10 @@ unsigned int FrameCount = 0;
 #define VERTICES 0
 #define COLORS 1
 
-GLuint VaoId, VboId[2];
+GLuint VaoId, *VboId;
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UniformId;
+SceneManager manager;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -96,16 +104,16 @@ void createShaderProgram()
 		"shaders/FragmentShader.glsl"
 	);
 	FragmentShader->compile();
+	
+	TriShaderProgram = new ShaderProgram(VertexShader, FragmentShader);
 
-	ProgramId = glCreateProgram();
-	glAttachShader(ProgramId, VertexShader->getId());
-	glAttachShader(ProgramId, FragmentShader->getId());
+	ProgramId = TriShaderProgram->getId();
+	TriShaderProgram->linkProgram();
 
-	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
-	glLinkProgram(ProgramId);
-	UniformId = glGetUniformLocation(ProgramId, "Matrix");
-
+	TriShaderProgram->setPositionAttribName("in_Position");
+	TriShaderProgram->linkProgram();
+	manager.setShaderProgram(TriShaderProgram);
+    manager.getShaderProgram()->getUniformLocation("Color");
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
 
@@ -118,31 +126,103 @@ void destroyShaderProgram()
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-const Vertex Vertices[] = 
-{
-	{{ 0.25f, 0.25f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.75f, 0.25f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.50f, 0.75f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}
+#define L 1.0f // length of a side of the tangram square
+
+const Vertex BackgroundVertices[] = {
+	{{  1.0f,   1.0f,   -1.0f, 1.0f }},
+	{{ -1.0f,   1.0f, -1.0f, 1.0f }},
+	{{ -1.0f,  -1.0f, -1.0f, 1.0f }},
+	{{ 1.0f,  -1.0f, -1.0f, 1.0f }}
 };
 
-const GLubyte Indices[] =
+const GLubyte Backgroundndices[] =
+{
+	0,1,2,4
+};
+
+const Vertex GrateTriagleVerices[] = 
+{
+	{{  0.0f,   0.0f,   0.0f, 1.0f }},
+	{{  L/2.0f, L/2.0f, 0.0f, 1.0f }},
+	{{ -L/2.0f, L/2.0f, 0.0f, 1.0f }}
+};
+
+GLfloat GrateTriagleColor1[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat GrateTriagleColor2[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+const Vertex MiddleTriangleVertices[] =
+{
+	{{  0.0f,   0.0f,   0.0f, 1.0f }},
+	{{  0.0f,   L/2.0f, 0.0f, 1.0f }},
+	{{ -L/2.0f, 0.0f,   0.0f, 1.0f }}
+};
+
+GLfloat MiddleTriagleColor[4] = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+const GLubyte TriangleIndices[] =
 {
 	0,1,2
 };
 
-Polygon *triangle;
-void createBufferObjects()
-{
-	triangle = new Polygon(VERTICES,COLORS);
-	triangle->setVertices(Vertices);
-	triangle->setIndices(Indices);
-	triangle->createBuffers();
 
+void createScene()
+{
+	// backgroud
+
+	Polygon *background = new Polygon(&manager);
+	background->setVertices(BackgroundVertices, sizeof(BackgroundVertices));
+	background->setIndices(TriangleIndices, sizeof(TriangleIndices), 4);
+	background->createBuffers();
+
+
+	// greate triangle
+	Polygon *grateTriangle;
+	grateTriangle = new Polygon(&manager);
+	grateTriangle->setVertices(GrateTriagleVerices, sizeof(GrateTriagleVerices));
+	grateTriangle->setIndices(TriangleIndices, sizeof(TriangleIndices), 3);
+	grateTriangle->createBuffers();
+
+	PolygonNode *grateTriangleNode  = new PolygonNode(grateTriangle);
+
+	// grate triangle 1
+	ColorNode *coloredGrateTriangle1 = new ColorNode(GrateTriagleColor1, &manager);
+	coloredGrateTriangle1->setNext(grateTriangleNode);
+	MatrixNode *grateTrianglePosition1 = new MatrixNode( &manager, &Matrix::createIdentity() );
+	grateTrianglePosition1->setNext(coloredGrateTriangle1);
+
+	// grate triangle 2
+	ColorNode *coloredGrateTriangle2 = new ColorNode(GrateTriagleColor2, &manager);
+	coloredGrateTriangle2->setNext(grateTriangleNode);
+	MatrixNode *grateTrianglePosition2 = new MatrixNode( &manager, &Matrix::createRotationZ(PI/2) );
+	grateTrianglePosition2->setNext(coloredGrateTriangle2);
+
+	// middle triangle
+	Polygon *middleTriangle;
+	middleTriangle = new Polygon(&manager);
+	middleTriangle->setVertices(MiddleTriangleVertices, sizeof(MiddleTriangleVertices));
+	middleTriangle->setIndices(TriangleIndices, sizeof(TriangleIndices), 3);
+	middleTriangle->createBuffers();
+
+	PolygonNode *middleTriangleNode = new PolygonNode(middleTriangle);
+
+	ColorNode *coloredMiddleTriangle = new ColorNode(MiddleTriagleColor, &manager);
+	coloredMiddleTriangle->setNext(middleTriangleNode);
+
+	MatrixNode *middleTrianglePosition = new MatrixNode( &manager, &Matrix::createTranslation(L/2.0f, -L/2.0f, 0) );
+	middleTrianglePosition->setNext(coloredMiddleTriangle);
+
+	
+	GroupNode *sceneRoot = manager.getSceneRoot();
+	sceneRoot->add( grateTrianglePosition1 );
+	sceneRoot->add( grateTrianglePosition2 );
+	sceneRoot->add( middleTrianglePosition );
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
 void destroyBufferObjects()
 {
+	// Donne whene the sceneRoot is destroyed.
+	/*
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -152,39 +232,34 @@ void destroyBufferObjects()
 	glDeleteBuffers(2, VboId);
 	glDeleteVertexArrays(1, &VaoId);
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
+	*/
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
-typedef GLfloat Matrix[16];
-
-const Matrix I = {
+GLfloat Iv[16] = {
 	1.0f,  0.0f,  0.0f,  0.0f,
 	0.0f,  1.0f,  0.0f,  0.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
 
-const Matrix M = {
+GLfloat Mv[16] = {
 	1.0f,  0.0f,  0.0f, -1.0f,
 	0.0f,  1.0f,  0.0f, -1.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
 
+
+Matrix I(Iv);
+Matrix T = Matrix::createTranslation(-1,-1,0);
+Matrix R = Matrix::createRotationZ(PI/2);
+Matrix FinalMatrix = Matrix::createTranslation(1,0,0) * R;
+
 void drawScene()
 {
-	glBindVertexArray(VaoId);
-	glUseProgram(ProgramId);
-
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
+	manager.renderScene();
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -287,7 +362,7 @@ void init(int argc, char* argv[])
 	setupGLEW();
 	setupOpenGL();
 	createShaderProgram();
-	createBufferObjects();
+	createScene();
 	setupCallbacks();
 }
 

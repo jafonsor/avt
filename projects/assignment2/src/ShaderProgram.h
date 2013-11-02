@@ -5,6 +5,8 @@
 #include "Shader.h"
 
 class ShaderProgram {
+	static const GLuint POSITION_CHANNEL = 0;
+	static const GLuint COLOR_CHANNEL = 1;
 	GLuint _programId;
 	Shader *_vertexShader;
 	Shader *_fragmentShader;
@@ -15,9 +17,17 @@ public:
 
 	GLuint getId();
 
-	void bindAttribLocation(GLuint channel, const GLchar *attribName);
-	void linkProgram();
+	GLint  getModelMatrixUniformId();
+	GLuint getPositionChannel();
+	GLuint getColorChannel();
+
+	void setPositionAttribName(const char *attribName);
+	void setColorAttribName(const char *attribName);
+
+	void  bindAttribLocation(GLuint channel, const GLchar *attribName);
+	void  linkProgram();
 	GLint getUniformLocation(const GLchar *name);
+	void  use();
 };
 
 #endif

@@ -1,5 +1,7 @@
 # makefile to compile projects on the lab
 CC = g++
+CFLAGS = -ansi -Wall -pedantic
+DBUG_FLAGS = -g -ggdb
 
 DEPSDIR = ../../dependencies
 DEPS_DIR = $(DEPSDIR)/ubuntu
@@ -9,8 +11,9 @@ LIB_FILE = -L$(DEPS_DIR)/glew/lib     -L$(DEPS_DIR)/freeglut/lib
 
 LIBS = -lGL -lGLEW -lglut -lGLU -lX11 -lXxf86vm -lXi
 
-SRCSDIR = src
 SRCS = $(shell cd $(SRCSDIR); find . -name "*.cpp")
+
+
 OBJSDIR = objs
 OBJS = $(SRCS:%.cpp=%.o)
 OBJS_WITH_DIR = $(OBJS:./%.o=$(OBJSDIR)/%.o)
@@ -19,8 +22,8 @@ DEBUGDIR = $(OBJSDIR)/Debug
 BINDIR = bin
 
 release: $(OBJS_WITH_DIR)
-	$(CC) -o $(EXE) $(OBJS_WITH_DIR) $(LIBS);
+	$(CC) $(CFLAGS) $(DBUG_FLAGS) -o $(EXE) $(OBJS_WITH_DIR) $(LIBS);
 	mv $(EXE) $(BINDIR)
 
 $(OBJSDIR)/%.o: $(SRCSDIR)/%.cpp
-	g++ -c $< -o $@
+	g++ $(CFLAGS) $(DBUG_FLAGS) -c $< -o $@

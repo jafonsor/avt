@@ -1,5 +1,6 @@
 # makefile to compile projects on the lab
 CC = g++
+CFLAGS = -ansi -Wall -pedantic
 
 DEPSDIR = ../../dependencies
 DEPS_DIR = $(DEPSDIR)/debian6
@@ -7,7 +8,7 @@ DEPS_DIR = $(DEPSDIR)/debian6
 INCLUDES = -I$(DEPS_DIR)/glew/include
 LIB_FILE = -L$(DEPS_DIR)/glew/lib
 
-LIBS = -lGL -lGLEW -lglut
+LIBS = -lGL -lGLEW -lglut -lGLU
 
 SRCSDIR = src
 SRCS = $(shell cd $(SRCSDIR); find . -name "*.cpp")
@@ -19,8 +20,7 @@ DEBUGDIR = $(OBJSDIR)/Debug
 BINDIR = bin
 
 release: $(OBJS_WITH_DIR)
-	$(CC) $(INCLUDES) $(LIB_FILE) -o $(BINDIR)/$(EXE) $(OBJS_WITH_DIR) $(LIBS);
-	mv $(EXE) $(BINDIR)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIB_FILE) -o $(BINDIR)/$(EXE) $(OBJS_WITH_DIR) $(LIBS);
 
 $(OBJSDIR)/%.o: $(SRCSDIR)/%.cpp
-	g++ -c $< -o $@ $(INCLUDES)
+	g++ $(CFLAGS) -c $< -o $@ $(INCLUDES)

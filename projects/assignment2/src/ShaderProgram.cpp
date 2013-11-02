@@ -6,6 +6,8 @@ ShaderProgram::ShaderProgram(Shader *vertexShader, Shader *fragmentShader):
 	_programId(0), _vertexShader(vertexShader), _fragmentShader(fragmentShader)
 {
 	_programId = glCreateProgram();
+	glAttachShader(_programId, _vertexShader->getId());
+	glAttachShader(_programId, _fragmentShader->getId());
 }
 
 ShaderProgram::~ShaderProgram() {
@@ -20,6 +22,25 @@ ShaderProgram::~ShaderProgram() {
 
 GLuint ShaderProgram::getId() {
 	return _programId;
+}
+
+GLint ShaderProgram::getModelMatrixUniformId() {
+	return getUniformLocation("Matrix");
+}
+
+GLuint ShaderProgram::getPositionChannel() {
+	return POSITION_CHANNEL;
+}
+
+GLuint ShaderProgram::getColorChannel() {
+	return COLOR_CHANNEL;
+}
+
+void ShaderProgram::setPositionAttribName(const char *attribName) {
+	bindAttribLocation(POSITION_CHANNEL, attribName);
+}
+void ShaderProgram::setColorAttribName(const char *attribName) {
+	bindAttribLocation(COLOR_CHANNEL, attribName);
 }
 
 void ShaderProgram::bindAttribLocation(GLuint channel, const GLchar *attribName) {
@@ -50,5 +71,9 @@ void ShaderProgram::linkProgram() {
 }
 
 GLint ShaderProgram::getUniformLocation(const GLchar *name) {
-	glGetUniformLocation(_programId, name);
+	return glGetUniformLocation(_programId, name);
+}
+
+void ShaderProgram::use() {
+	glUseProgram(_programId);
 }
