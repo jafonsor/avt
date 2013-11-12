@@ -1,8 +1,8 @@
 # gedit backup files
 *~
 
-assignment*
+*bin/*
 *.o
 
-// dia autosaves
+
 *.autosave
