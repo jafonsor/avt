@@ -3,3 +3,6 @@
 
 *bin/*
 *.o
+
+// dia autosaves
+*.autosave
