@@ -4,6 +4,19 @@ BINDIR = bin
 OBJSDIR = objs
 SRCSDIR = src
 
+debian-test:
+	cp debian-make/makefile ../
+	(cd ../; \
+	make test EXE=$(EXE) BINDIR=$(BINDIR) OBJSDIR=$(OBJSDIR) SRCSDIR=$(SRCSDIR); \
+	rm makefile)
+
+ubuntu-test: $(OBJS_WITH_DIR)
+	cp ubuntu-make/makefile ../
+	(cd ../; \
+	make test EXE=$(EXE) BINDIR=$(BINDIR) OBJSDIR=$(OBJSDIR) SRCSDIR=$(SRCSDIR); \
+	rm makefile)
+
+
 debian: 
 	cp debian-make/makefile ../
 	(cd ../; \
