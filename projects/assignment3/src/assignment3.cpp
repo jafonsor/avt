@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////
+ 	///////////////////////////////////////////////////////////////////////
 //
 // Assignment 3 consists in the following:
 //
@@ -50,6 +50,9 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
+#include "Shader.h"
+#include "ShaderProgram.h"
+
 #define CAPTION "Hello New World"
 
 int WinX = 640, WinY = 480;
@@ -63,6 +66,8 @@ GLuint VaoId, VboId[2];
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
+
+ShaderProgram *shaderProgram = NULL;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -126,24 +131,21 @@ const GLchar* FragmentShader =
 
 void createShaderProgram()
 {
-	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(VertexShaderId, 1, &VertexShader, 0);
-	glCompileShader(VertexShaderId);
+	Shader *vertexShader   = Shader::buildFromFile(
+		GL_VERTEX_SHADER,
+		"shaders/VertexShader.glsl"
+	);
 
-	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(FragmentShaderId, 1, &FragmentShader, 0);
-	glCompileShader(FragmentShaderId);
+	Shader *fragmentShader = Shader::buildFromFile(
+		GL_FRAGMENT_SHADER,
+		"shaders/FragmentShader.glsl"
+	);
 
-	ProgramId = glCreateProgram();
-	glAttachShader(ProgramId, VertexShaderId);
-	glAttachShader(ProgramId, FragmentShaderId);
+	shaderProgram = ShaderProgram::buildShaderProgram(vertexShader, fragmentShader);
 
-	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
-	glLinkProgram(ProgramId);
-	UniformId = glGetUniformLocation(ProgramId, "ModelMatrix");
-	UboId = glGetUniformBlockIndex(ProgramId, "SharedMatrices");
-	glUniformBlockBinding(ProgramId, UboId, UBO_BP);
+	ProgramId = shaderProgram->getId();
+	UniformId = shaderProgram->getUniformLocation("ModelMatrix");
+	UboId     = shaderProgram->getUniformBlockIndex("SharedMatrices");
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
@@ -231,7 +233,7 @@ void createBufferObjects()
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix)*2, 0, GL_STREAM_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, UBO_BP, VboId[1]);
+	glBindBufferBase(GL_UNIFORM_BUFFER, shaderProgram->getUniformBlockBiding("SharedMatrices"), VboId[1]);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

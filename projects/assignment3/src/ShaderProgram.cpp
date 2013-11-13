@@ -1,9 +1,11 @@
 #include "ShaderProgram.h"
 
 #include <iostream>
+#include <string>
 
 ShaderProgram::ShaderProgram(Shader *vertexShader, Shader *fragmentShader):
-	_programId(0), _vertexShader(vertexShader), _fragmentShader(fragmentShader)
+	_programId(0), _vertexShader(vertexShader), _fragmentShader(fragmentShader),
+	_blockBindings()
 {
 	_programId = glCreateProgram();
 	glAttachShader(_programId, _vertexShader->getId());
@@ -20,14 +22,6 @@ ShaderProgram::~ShaderProgram() {
 	glDeleteProgram(_programId);
 }
 
-
-GLuint ShaderProgram::getPositionChannel() {
-	return POSITION_CHANNEL;
-}
-
-GLuint ShaderProgram::getColorChannel() {
-	return COLOR_CHANNEL;
-}
 
 void ShaderProgram::bindAttribLocation(GLuint channel, const GLchar *attribName) {
 	glBindAttribLocation(_programId, channel, attribName);
@@ -59,9 +53,11 @@ void ShaderProgram::linkProgram() {
 ShaderProgram *ShaderProgram::buildShaderProgram(Shader *vertexShader, Shader *fragmentShader) {
 	ShaderProgram *shProg = new ShaderProgram(vertexShader, fragmentShader);
 	
-	bindAttribLocation(POSITION_CHANNEL, "in_Position");
-	bindAttribLocation(COLOR_CHANNEL,    "in_Color");
+	shProg->bindAttribLocation(POSITION_CHANNEL, "in_Position");
+	shProg->bindAttribLocation(COLOR_CHANNEL,    "in_Color");
 	shProg->linkProgram();
+
+	return shProg;
 }
 
 
@@ -69,12 +65,24 @@ GLint ShaderProgram::getUniformLocation(const GLchar *name) {
 	return glGetUniformLocation(_programId, name);
 }
 
-GLuint ShaderProgram::getId() {
-	return _programId;
+GLint ShaderProgram::getUniformBlockIndex(const GLchar *name) {
+	return glGetUniformBlockIndex(_programId, name);
+}
+GLint ShaderProgram::getUniformBlockBiding(const GLchar *name) {
+	std::string strName(name);
+	if(_blockBindings.count(strName) == 0) {
+		_blockBindings[strName] = _blockBindings.size();
+		glUniformBlockBinding(
+			_programId,
+			getUniformBlockIndex(name),
+			_blockBindings[strName]
+		);
+	}
+	return _blockBindings[strName];
 }
 
-GLint ShaderProgram::getModelMatrixUniformId() {
-	return getUniformLocation("Matrix");
+GLuint ShaderProgram::getId() {
+	return _programId;
 }
 
 void ShaderProgram::use() {

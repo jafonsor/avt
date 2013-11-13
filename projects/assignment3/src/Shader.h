@@ -1,6 +1,7 @@
 #ifndef SHADER_H
 #define SHADER_H 
 
+#include <map>
 #include <string>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -13,7 +14,7 @@ class Shader {
 	void compile();
 
 public:
-	static Shader *buildFromFile(std::string shaderFileName);
+	static Shader *buildFromFile(GLenum shaderType, std::string shaderFileName);
 
 
 	~Shader();
