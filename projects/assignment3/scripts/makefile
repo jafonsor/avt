@@ -30,7 +30,7 @@ ubuntu: $(OBJS_WITH_DIR)
 	rm makefile)
 	
 run:
-	./../$(BINDIR)/$(EXE)
+	(cd ../$(BINDIR); ./$(EXE))
 
 clean:
 	(cd ../$(OBJSDIR); rm -rf *;)
