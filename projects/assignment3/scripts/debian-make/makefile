@@ -1,5 +1,7 @@
 # makefile to compile projects on the lab
 CC = g++
+CFLAGS = -ansi -Wall -pedantic
+DBUG_FLAGS = -g -ggdb
 
 DEPSDIR = ../../dependencies
 DEPS_DIR = $(DEPSDIR)/debian6

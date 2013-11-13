@@ -14,6 +14,6 @@ layout(std140) uniform SharedMatrices
 
 void main(void)
 {
-	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrixin_Position;
+	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * in_Position;
 	ex_Color = in_Color;
 }
