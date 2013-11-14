@@ -52,6 +52,7 @@
 
 #include "Shader.h"
 #include "ShaderProgram.h"
+#include "Matrix.h"
 
 #define CAPTION "Hello New World"
 
@@ -68,6 +69,7 @@ GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
 ShaderProgram *shaderProgram = NULL;
+
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -170,7 +172,7 @@ typedef struct {
 	GLfloat RGBA[4];
 } Vertex;
 
-typedef GLfloat Matrix[16];
+
 
 const Vertex Vertices[] = 
 {
@@ -232,7 +234,7 @@ void createBufferObjects()
 	glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(Vertices[0].XYZW));
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix)*2, 0, GL_STREAM_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat)*16*2, 0, GL_STREAM_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, shaderProgram->getUniformBlockBiding("SharedMatrices"), VboId[1]);
 
 	glBindVertexArray(0);
@@ -258,14 +260,14 @@ void destroyBufferObjects()
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
-const Matrix I = {
+const GLfloat I[16] = {
 	1.0f,  0.0f,  0.0f,  0.0f,
 	0.0f,  1.0f,  0.0f,  0.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 };
 
-const Matrix ModelMatrix = {
+const GLfloat ModelMatrix[16] = {
 	1.0f,  0.0f,  0.0f,  0.0f,
     0.0f,  1.0f,  0.0f,  0.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
@@ -273,7 +275,7 @@ const Matrix ModelMatrix = {
 }; // Column Major
 
 // Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix1 = {
+const GLfloat ViewMatrix1[16] = {
     0.70f, -0.41f,  0.58f,  0.00f,
 	0.00f,  0.82f,  0.58f,  0.00f,
    -0.70f, -0.41f,  0.58f,  0.00f,
@@ -281,7 +283,7 @@ const Matrix ViewMatrix1 = {
 }; // Column Major
 
 // Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix2 = {
+const GLfloat ViewMatrix2[16] = {
    -0.70f, -0.41f, -0.58f,  0.00f,
 	0.00f,  0.82f, -0.58f,  0.00f,
     0.70f, -0.41f, -0.58f,  0.00f,
@@ -289,7 +291,7 @@ const Matrix ViewMatrix2 = {
 }; // Column Major
 
 // Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
-const Matrix ProjectionMatrix1 = {
+const GLfloat ProjectionMatrix1[16] = {
 	0.50f,  0.00f,  0.00f,  0.00f,
 	0.00f,  0.50f,  0.00f,  0.00f,
 	0.00f,  0.00f, -0.22f,  0.00f,
@@ -297,7 +299,7 @@ const Matrix ProjectionMatrix1 = {
 }; // Column Major
 
 // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const Matrix ProjectionMatrix2 = {
+const GLfloat ProjectionMatrix2[16] = {
 	2.79f,  0.00f,  0.00f,  0.00f,
 	0.00f,  3.73f,  0.00f,  0.00f,
 	0.00f,  0.00f, -1.22f, -1.00f,
@@ -306,9 +308,16 @@ const Matrix ProjectionMatrix2 = {
 
 void drawScene()
 {
+	GLfloat *projection =  Matrix::createOrtho(-20,20, -20,20, 1,10).getValues();
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), ViewMatrix2);
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
+
+	std::cout << "ola\n";
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat)*16, ViewMatrix2);
+	checkOpenGLError("ERROR: Could not draw scene.");
+	std::cout << "ola\n";
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLfloat)*16, sizeof(GLfloat)*16, projection);
+	checkOpenGLError("ERROR: Could not draw scene.");
+	std::cout << "ola\n";
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	glBindVertexArray(VaoId);

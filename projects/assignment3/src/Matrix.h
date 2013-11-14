@@ -18,6 +18,7 @@ public:
 	static Matrix &createIdentity();
 	static Matrix &createTranslation(GLfloat dx, GLfloat dy, GLfloat dz);
 	static Matrix &createRotationZ(float angle);
+	static Matrix &createOrtho(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far);
 
 	Matrix& operator+(Matrix &otherMatrix);
 	Matrix& operator*(Matrix &otherMatrix);

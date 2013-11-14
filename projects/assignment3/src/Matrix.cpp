@@ -47,7 +47,22 @@ Matrix &Matrix::createRotationZ(float angle) {
 	
 	return *result;
 }
-	
+
+Matrix &Matrix::createOrtho(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far) {
+	Matrix *result = new Matrix();
+	result->set(0,0,  2.0f / (right - left) );
+	result->set(1,1,  2.0f / (top   - bottom) );
+	result->set(2,2, -2.0f / (far   - near) );
+
+	result->set(3,0, - (right + left)   / (right - left) );
+	result->set(3,1, - (top   + bottom) / (top   - bottom) );
+	result->set(3,2, - (far   + near)   / (far   - near) );
+
+	result->set(3,3,  1.0f);
+
+	return *result;
+}
+
 void Matrix::set(int x, int y, GLfloat value) {
 	_values[4*x + y] = value;
 }
