@@ -29,6 +29,7 @@ test: $(OBJS_WITH_DIR_TEST)
 
 release: $(OBJS_WITH_DIR_EXE)
 	$(CC) $(INCLUDES) $(LIB_FILE) $(CFLAGS) $(DBUG_FLAGS) -o $(EXE) $(OBJS_WITH_DIR_EXE) $(LIBS);
+	mkdir -p $(BINDIR)
 	mv $(EXE) $(BINDIR)
 
 $(OBJSDIR)/%.o: $(SRCSDIR)/%.cpp
