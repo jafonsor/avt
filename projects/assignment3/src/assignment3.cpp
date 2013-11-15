@@ -73,6 +73,7 @@ const GLuint UBO_BP = 0;
 ShaderProgram *shaderProgram = NULL;
 Camera cam;
 float angle = 0;
+float px = 0, py = 0, pz = 0;
 
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -317,24 +318,26 @@ const GLfloat ProjectionMatrix2[16] = {
 
 void drawScene()
 {
-	GLfloat *projection =  Matrix::createOrtho(-2,2, -2,2, 1,10).getValues();
+	GLfloat *projection =  Matrix::createOrtho(-2,2, -2,2, 1,100).getValues();
 	Vector axis = {1,0,0};
 	GLfloat qmat[16];
+	Matrix viewm = cam.getView();
+	print(viewm);
+	GLfloat *view = viewm.getValues();
+
 	qGLMatrix( qFromAngleAxis(angle, axis), qmat);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat)*16, ViewMatrix2);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat)*16, view);
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLfloat)*16, sizeof(GLfloat)*16, projection);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	glBindVertexArray(VaoId);
 	glUseProgram(ProgramId);
 
-	Matrix viewm = cam.getView();
-	print(viewm);
-	GLfloat *view = viewm.getValues();
-	glUniformMatrix4fv(UniformId, 1, GL_FALSE, view);	
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, Matrix::createTranslation(px,py,pz).getValues());	
 	glDrawArrays(GL_TRIANGLES,0,36);
 
 	glUseProgram(0);
@@ -372,17 +375,23 @@ void reshape(int w, int h)
 }
 
 void keyboardFunc(unsigned char key, int x, int y) {
+	float delta = 0.3;
 	switch(key) {
 		case 'a':
 			std::cout << "a\n";
         	angle += 3.14f / 2.0f;
         	break;
-		case 'w': std::cout << "w\n";
-		     break;
-		case 'd': std::cout << "d\n";
-		     break;
+		case 'w':
+			std::cout << "w\n";
+			px += delta;
+		    break;
+		case 'd':
+			std::cout << "d\n";
+		    py += delta;
+		    break;
 		case 's': std::cout << "s\n";
-		     break;
+		    pz += delta;
+		    break;
 	}
 }
 
