@@ -5,21 +5,17 @@
 
 class MeshBuilder 
 {
-
-	 _verticies;
-	 _indices;
+	_verticies;
+	_indices;
 
 public:
 	void beginMesh ();
 	Mesh endMesh() ();
-	void position (float x,
-	               float y,
-	               float z);
-	void color (float r,
-	            float g,
-	            float b,
-	            float a);
+	void position (float x, float y, float z);
+	void color (float r, float g, float b, float a);
 	void index (int ind);
+
+
 };
 
 #endif

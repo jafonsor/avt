@@ -53,6 +53,8 @@
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "Matrix.h"
+#include "Quaternion.h"
+#include "Camera.h"
 
 #define CAPTION "Hello New World"
 
@@ -69,6 +71,8 @@ GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
 ShaderProgram *shaderProgram = NULL;
+Camera cam;
+float angle = 0;
 
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -243,6 +247,11 @@ void createBufferObjects()
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
 
+	Vector eye    = {0,0,10};
+	Vector center = {0, 0, 0};
+	Vector up     = {0, 1, 0};
+	cam.lookAt(eye, center, up);
+
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
@@ -308,22 +317,24 @@ const GLfloat ProjectionMatrix2[16] = {
 
 void drawScene()
 {
-	GLfloat *projection =  Matrix::createOrtho(-20,20, -20,20, 1,10).getValues();
+	GLfloat *projection =  Matrix::createOrtho(-2,2, -2,2, 1,10).getValues();
+	Vector axis = {1,0,0};
+	GLfloat qmat[16];
+	qGLMatrix( qFromAngleAxis(angle, axis), qmat);
+
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 
-	std::cout << "ola\n";
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat)*16, ViewMatrix2);
-	checkOpenGLError("ERROR: Could not draw scene.");
-	std::cout << "ola\n";
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLfloat)*16, sizeof(GLfloat)*16, projection);
-	checkOpenGLError("ERROR: Could not draw scene.");
-	std::cout << "ola\n";
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	glBindVertexArray(VaoId);
 	glUseProgram(ProgramId);
 
-	glUniformMatrix4fv(UniformId, 1, GL_FALSE, I/*ModelMatrix*/);	
+	Matrix viewm = cam.getView();
+	print(viewm);
+	GLfloat *view = viewm.getValues();
+	glUniformMatrix4fv(UniformId, 1, GL_FALSE, view);	
 	glDrawArrays(GL_TRIANGLES,0,36);
 
 	glUseProgram(0);
@@ -360,6 +371,21 @@ void reshape(int w, int h)
 	glViewport(0, 0, WinX, WinY);
 }
 
+void keyboardFunc(unsigned char key, int x, int y) {
+	switch(key) {
+		case 'a':
+			std::cout << "a\n";
+        	angle += 3.14f / 2.0f;
+        	break;
+		case 'w': std::cout << "w\n";
+		     break;
+		case 'd': std::cout << "d\n";
+		     break;
+		case 's': std::cout << "s\n";
+		     break;
+	}
+}
+
 void timer(int value)
 {
 	std::ostringstream oss;
@@ -380,6 +406,7 @@ void setupCallbacks()
 	glutIdleFunc(idle);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0,timer,0);
+	glutKeyboardFunc(keyboardFunc);
 }
 
 void setupOpenGL() {
