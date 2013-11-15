@@ -4,9 +4,6 @@
 #include <string>
 #include <cmath>
 
-#define DEGREES_TO_RADIANS 0.01745329251994329547
-#define RADIANS_TO_DEGREES 57.29577951308232185913
-
 const Vector vNormalize(const Vector& v) 
 {
 	Vector vn;

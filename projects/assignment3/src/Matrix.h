@@ -19,10 +19,7 @@ public:
 	static Matrix &createTranslation(GLfloat dx, GLfloat dy, GLfloat dz);
 	static Matrix &createRotationZ(float angle);
 	static Matrix &createOrtho(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far);
-	static Matrix &createView(
-		GLfloat eyex, GLfloat eyey, GLfloat eyez,
-		GLfloat cx,   GLfloat cy,   GLfloat cz,
-		GLfloat upx,  GLfloat upy,  GLfloat upz);
+	static Matrix &createPerspective(GLfloat fovy, GLfloat aspect, GLfloat near, GLfloat far);
 
 	Matrix& operator+(Matrix &otherMatrix);
 	Matrix& operator*(Matrix &otherMatrix);

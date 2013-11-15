@@ -1,8 +1,23 @@
 #include "Camera.h"
 
+Camera::Camera(Matrix &projection) :
+	_projection(projection)
+{
+	//empty
+}
+
 Matrix Camera::getView() { return _viewMatrix; }
+Matrix Camera::getProjection() { return _projection; }
+
+void Camera::setProjection(Matrix &projection) {
+	_projection = projection;
+}
 
 void Camera::lookAt(Vector &eye, Vector &center, Vector &up) {
+		_eye = eye;
+		_center = center;
+		_up = up;
+
 		Vector view = vSub(center, eye);
 		Vector v = vNormalize(view);
 		Vector side = vCross(v,up);

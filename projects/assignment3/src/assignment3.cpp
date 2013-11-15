@@ -54,7 +54,7 @@
 #include "ShaderProgram.h"
 #include "Matrix.h"
 #include "Quaternion.h"
-#include "Camera.h"
+#include "SphereCam.h"
 
 #define CAPTION "Hello New World"
 
@@ -71,9 +71,9 @@ GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
 ShaderProgram *shaderProgram = NULL;
-Camera cam;
+SphereCam *cam = NULL;
 float angle = 0;
-float px = 0, py = 0, pz = 0;
+float px = -0.5, py = -0.5, pz = -0.5;
 
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -248,10 +248,11 @@ void createBufferObjects()
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
 
+	cam = new SphereCam( Matrix::createPerspective(30.0f,640.0f/480.0f,1.0f,10.0f), 10.0f );
 	Vector eye    = {0,0,10};
 	Vector center = {0, 0, 0};
 	Vector up     = {0, 1, 0};
-	cam.lookAt(eye, center, up);
+	cam->lookAt(eye, center, up);
 
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
@@ -318,10 +319,11 @@ const GLfloat ProjectionMatrix2[16] = {
 
 void drawScene()
 {
-	GLfloat *projection =  Matrix::createOrtho(-2,2, -2,2, 1,100).getValues();
+	Matrix projectionm = cam->getProjection();
+	GLfloat *projection = projectionm.getValues();
 	Vector axis = {1,0,0};
 	GLfloat qmat[16];
-	Matrix viewm = cam.getView();
+	Matrix viewm = cam->getView();
 	print(viewm);
 	GLfloat *view = viewm.getValues();
 
@@ -374,8 +376,20 @@ void reshape(int w, int h)
 	glViewport(0, 0, WinX, WinY);
 }
 
+void timer(int value)
+{
+	std::ostringstream oss;
+	oss << CAPTION << ": " << FrameCount << " FPS @ (" << WinX << "x" << WinY << ")";
+	std::string s = oss.str();
+	glutSetWindow(WindowHandle);
+	glutSetWindowTitle(s.c_str());
+    FrameCount = 0;
+    glutTimerFunc(1000, timer, 0);
+}
+
 void keyboardFunc(unsigned char key, int x, int y) {
-	float delta = 0.3;
+	float delta = 0.005;
+	float deltaAng = 3.14f / 16.0f;
 	switch(key) {
 		case 'a':
 			std::cout << "a\n";
@@ -389,21 +403,37 @@ void keyboardFunc(unsigned char key, int x, int y) {
 			std::cout << "d\n";
 		    py += delta;
 		    break;
-		case 's': std::cout << "s\n";
+		case 's':
+			std::cout << "s\n";
 		    pz += delta;
 		    break;
+		case 'j':
+			std::cout << "j\n";
+        	cam->deltaTheta(deltaAng);
+        	break;
+		case 'i':
+			std::cout << "i\n";
+			cam->deltaPhi(deltaAng);
+		    break;
+		case 'l':
+			std::cout << "l\n";
+		    cam->deltaRadius(delta);
+		    break;
+		case 'k':
+			std::cout << "k\n";
+		    pz += delta;
+		    break;
+		case 'q':
+			cam->setProjection( Matrix::createPerspective(30.0f,640.0f/480.0f,1.0f,10.0f) );
+			break;
+		case 'e':
+			cam->setProjection( Matrix::createOrtho(-2,2, -2,2, 1, 100) );
+			break;
 	}
 }
 
-void timer(int value)
-{
-	std::ostringstream oss;
-	oss << CAPTION << ": " << FrameCount << " FPS @ (" << WinX << "x" << WinY << ")";
-	std::string s = oss.str();
-	glutSetWindow(WindowHandle);
-	glutSetWindowTitle(s.c_str());
-    FrameCount = 0;
-    glutTimerFunc(1000, timer, 0);
+void mouseFunc(int x, int y) {
+
 }
 
 /////////////////////////////////////////////////////////////////////// SETUP
@@ -416,6 +446,7 @@ void setupCallbacks()
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0,timer,0);
 	glutKeyboardFunc(keyboardFunc);
+	glutMotionFunc(mouseFunc);
 }
 
 void setupOpenGL() {

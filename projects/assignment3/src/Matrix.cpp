@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include "Quaternion.h"
 
 Matrix::Matrix() {
 	_values = new GLfloat[16];
@@ -59,6 +60,19 @@ Matrix &Matrix::createOrtho(GLfloat left, GLfloat right, GLfloat bottom, GLfloat
 	result->set(3,2, - (far   + near)   / (far   - near) );
 
 	result->set(3,3,  1.0f);
+
+	return *result;
+}
+
+Matrix &Matrix::createPerspective(GLfloat fovy, GLfloat aspect, GLfloat near, GLfloat far) {
+	Matrix *result = new Matrix();
+	GLfloat f = 1 / tan( fovy * DEGREES_TO_RADIANS / 2.0f );
+
+	result->set(0,0, f / aspect);
+	result->set(1,1, f);
+	result->set(2,2, (near + far) / (near + far) );
+	result->set(2,3, (2 * far * near) / (near - far) );
+	result->set(3,2, -1);
 
 	return *result;
 }
