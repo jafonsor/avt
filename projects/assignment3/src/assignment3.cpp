@@ -70,10 +70,15 @@ GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
+float RotationAngleY = 0;
+float RotationAngleX = 0;
+int LastMousePositionX = 0;
+int LastMousePositionY = 0;
 ShaderProgram *shaderProgram = NULL;
 SphereCam *cam = NULL;
 float angle = 0;
 float px = -0.5, py = -0.5, pz = -0.5;
+GLfloat *MyModelMatrix;
 
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -97,44 +102,6 @@ void checkOpenGLError(std::string error)
 		exit(EXIT_FAILURE);
 	}
 }
-
-/////////////////////////////////////////////////////////////////////// SHADERs
-
-const GLchar* VertexShader =
-{
-	"#version 330 core\n"
-
-	"in vec4 in_Position;\n"
-	"in vec4 in_Color;\n"
-	"out vec4 ex_Color;\n"
-
-	"uniform mat4 ModelMatrix;\n"
-
-	"layout(std140) uniform SharedMatrices\n"
-	"{\n"
-	"	mat4 ViewMatrix;\n"
-	"	mat4 ProjectionMatrix;\n"
-	"};\n"
-
-	"void main(void)\n"
-	"{\n"
-	"	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * in_Position;\n"
-	"	ex_Color = in_Color;\n"
-	"}\n"
-};
-
-const GLchar* FragmentShader =
-{
-	"#version 330 core\n"
-
-	"in vec4 ex_Color;\n"
-	"out vec4 out_Color;\n"
-
-	"void main(void)\n"
-	"{\n"
-	"	out_Color = ex_Color;\n"
-	"}\n"
-};
 
 void createShaderProgram()
 {
@@ -248,11 +215,13 @@ void createBufferObjects()
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
 
-	cam = new SphereCam( Matrix::createPerspective(30.0f,640.0f/480.0f,1.0f,10.0f), 10.0f );
-	Vector eye    = {0,0,10};
+	cam = new SphereCam( Matrix::createPerspective(30.0f,640.0f/480.0f,1.0f,10.0f) );
+	Vector eye    = {0, 0, 10};
 	Vector center = {0, 0, 0};
 	Vector up     = {0, 1, 0};
 	cam->lookAt(eye, center, up);
+
+	MyModelMatrix = Matrix::createIdentity().getValues();
 
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
@@ -324,7 +293,7 @@ void drawScene()
 	Vector axis = {1,0,0};
 	GLfloat qmat[16];
 	Matrix viewm = cam->getView();
-	print(viewm);
+	//print(viewm);
 	GLfloat *view = viewm.getValues();
 
 	qGLMatrix( qFromAngleAxis(angle, axis), qmat);
@@ -339,7 +308,7 @@ void drawScene()
 	glUseProgram(ProgramId);
 
 
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, Matrix::createTranslation(px,py,pz).getValues());	
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);	
 	glDrawArrays(GL_TRIANGLES,0,36);
 
 	glUseProgram(0);
@@ -388,8 +357,8 @@ void timer(int value)
 }
 
 void keyboardFunc(unsigned char key, int x, int y) {
+	static bool toPerspective = false;
 	float delta = 0.005;
-	float deltaAng = 3.14f / 16.0f;
 	switch(key) {
 		case 'a':
 			std::cout << "a\n";
@@ -407,34 +376,39 @@ void keyboardFunc(unsigned char key, int x, int y) {
 			std::cout << "s\n";
 		    pz += delta;
 		    break;
-		case 'j':
-			std::cout << "j\n";
-        	cam->deltaTheta(deltaAng);
-        	break;
-		case 'i':
-			std::cout << "i\n";
-			cam->deltaPhi(deltaAng);
-		    break;
-		case 'l':
-			std::cout << "l\n";
-		    cam->deltaRadius(delta);
-		    break;
 		case 'k':
 			std::cout << "k\n";
 		    pz += delta;
 		    break;
-		case 'q':
-			cam->setProjection( Matrix::createPerspective(30.0f,640.0f/480.0f,1.0f,10.0f) );
-			break;
-		case 'e':
-			cam->setProjection( Matrix::createOrtho(-2,2, -2,2, 1, 100) );
+		case 'p':
+			if(toPerspective) {
+				cam->setProjection( Matrix::createPerspective(30.0f,640.0f/480.0f,1.0f,10.0f) );
+				toPerspective = false;
+			} else {
+				cam->setProjection( Matrix::createOrtho(-2,2, -2,2, 1, 100) );
+				toPerspective = true;
+			}
 			break;
 	}
 }
 
-void mouseFunc(int x, int y) {
+void mouse(int button, int state, int x, int y) 
+{
+	LastMousePositionX = x;
+	LastMousePositionY = y;
+}
+
+void mouseMotion(int x, int y) 
+{
+	float factor = 0.1;
+	float RotationAngleY = (float)(x - LastMousePositionX) * factor;
+	float RotationAngleX = (float)(y - LastMousePositionY) * factor;
+	cam->rotate(RotationAngleX,RotationAngleY);
+	LastMousePositionX = x;
+	LastMousePositionY = y;
 
 }
+
 
 /////////////////////////////////////////////////////////////////////// SETUP
 
@@ -446,7 +420,8 @@ void setupCallbacks()
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0,timer,0);
 	glutKeyboardFunc(keyboardFunc);
-	glutMotionFunc(mouseFunc);
+	glutMouseFunc(mouse);
+	glutMotionFunc(mouseMotion);
 }
 
 void setupOpenGL() {

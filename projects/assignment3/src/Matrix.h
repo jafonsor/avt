@@ -18,6 +18,8 @@ public:
 	static Matrix &createIdentity();
 	static Matrix &createTranslation(GLfloat dx, GLfloat dy, GLfloat dz);
 	static Matrix &createRotationZ(float angle);
+	static Matrix &createRotationX(float angle);
+	static Matrix &createRotationY(float angle);
 	static Matrix &createOrtho(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far);
 	static Matrix &createPerspective(GLfloat fovy, GLfloat aspect, GLfloat near, GLfloat far);
 

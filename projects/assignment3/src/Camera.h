@@ -5,10 +5,10 @@
 #include "Quaternion.h"
 
 class Camera {
-	Matrix _viewMatrix;
 	Matrix _projection;
 
 protected:
+	Matrix _viewMatrix;
 	Vector _eye;
 	Vector _center;
 	Vector _up;

@@ -49,6 +49,37 @@ Matrix &Matrix::createRotationZ(float angle) {
 	return *result;
 }
 
+Matrix &Matrix::createRotationX(float angle) {
+	Matrix *result = new Matrix();
+	result->set(0,0,  1);
+	
+	result->set(1,1,  cos(angle));
+	result->set(1,2,  sin(angle));
+
+	result->set(2,1, -sin(angle));
+	result->set(2,2,  cos(angle));
+
+	result->set(3,3,  1);
+
+	return *result;
+}
+Matrix &Matrix::createRotationY(float angle) {
+	Matrix *result = new Matrix();
+	
+	
+	result->set(0,0,  cos(angle));
+	result->set(0,2, -sin(angle));
+
+	result->set(1,1,  1);
+
+	result->set(2,0,  sin(angle));
+	result->set(2,2,  cos(angle));
+
+	result->set(3,3,  1);
+
+	return *result;
+}
+
 Matrix &Matrix::createOrtho(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far) {
 	Matrix *result = new Matrix();
 	result->set(0,0,  2.0f / (right - left) );

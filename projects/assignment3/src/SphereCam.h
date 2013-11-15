@@ -4,18 +4,15 @@
 #include "Camera.h"
 
 class SphereCam : public Camera {
-	float _theta;
-	float _phi;
-	float _radius;
+	float _xAngle;
+	float _yAngle;
 
 private:
 	void updateEye();
 
 public:
-	SphereCam(Matrix &projection, float radius);
-	void deltaTheta( float delta);
-	void deltaPhi(   float delta);
-	void deltaRadius(float delta);
+	SphereCam(Matrix &projection);
+	void rotate(float deltaAngleX, float deltaAngleY);
 };
 
 #endif
