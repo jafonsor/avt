@@ -17,7 +17,8 @@ ubuntu: $(OBJS_WITH_DIR)
 	rm makefile)
 	
 run:
-	./../$(BINDIR)/$(EXE)
+	cp -r ../$(SRCSDIR)/shaders ../$(BINDIR)/shaders
+	(cd ../$(BINDIR); ./$(EXE))
 
 clean:
 	(cd ../$(OBJSDIR); rm -rf *;)
